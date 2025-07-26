@@ -3,11 +3,11 @@
 set -e
 cd $(dirname "${BASH_SOURCE[0]}")
 
-vers=3.5.0
+vers=3.5.1
 
 ./download.sh https://github.com/openssl/openssl openssl $vers openssl-$vers
 
-if [[ ! -d "openssl" ]]; then 
+if [[ ! -d "openssl" ]]; then
     rm -rf openssl/
     tar -xzf openssl-$vers.tar.gz
     mv openssl-openssl-$vers openssl

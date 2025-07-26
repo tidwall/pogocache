@@ -3,11 +3,11 @@
 set -e
 cd $(dirname "${BASH_SOURCE[0]}")
 
-vers=2.10
+vers=2.11
 
 ./download.sh https://github.com/axboe/liburing liburing $vers liburing-$vers
 
-if [[ ! -d "liburing" ]]; then 
+if [[ ! -d "liburing" ]]; then
     rm -rf liburing/
     tar -xzf liburing-$vers.tar.gz
     mv liburing-liburing-$vers liburing

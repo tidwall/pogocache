@@ -1,7 +1,7 @@
 /*
  *  LZ4 - Fast LZ compression algorithm
  *  Header File
- *  Copyright (C) 2011-2023, Yann Collet.
+ *  Copyright (c) Yann Collet. All rights reserved.
 
    BSD 2-Clause License (http://www.opensource.org/licenses/bsd-license.php)
 
@@ -700,10 +700,10 @@ int LZ4_compress_destSize_extState(void* state, const char* src, char* dst, int*
 
 #if defined(__cplusplus) || (defined (__STDC_VERSION__) && (__STDC_VERSION__ >= 199901L) /* C99 */)
 # include <stdint.h>
-  typedef  int8_t  LZ4_i8;
-  typedef uint8_t  LZ4_byte;
-  typedef uint16_t LZ4_u16;
-  typedef uint32_t LZ4_u32;
+  typedef int8_t         LZ4_i8;
+  typedef unsigned char  LZ4_byte;
+  typedef uint16_t       LZ4_u16;
+  typedef uint32_t       LZ4_u32;
 #else
   typedef   signed char  LZ4_i8;
   typedef unsigned char  LZ4_byte;

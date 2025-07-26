@@ -1,4 +1,5 @@
 .DS_Store
+.idea
 .vscode
 *.dSYM
 *.o
@@ -25,4 +26,4 @@ pogocache-start.sh
 pogocache
 pogocache-sani
 data/
-
+*build*

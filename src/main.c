@@ -418,8 +418,8 @@ int main(int argc, char *argv[]) {
     usetls = false;
     useauth = false;
     lowmem = false;
-    version = GITVERS;
-    githash = GITHASH;
+    version = (char*)GITVERS;
+    githash = (char*)GITHASH;
 
     
 

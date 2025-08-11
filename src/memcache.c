@@ -30,8 +30,8 @@ bool mc_valid_key(struct args *args, int i) {
     if (len == 0 || len > 250) {
         return false;
     }
-    for (size_t i = 0; i < len; i++) {
-        if (key[i] <= ' ' || key[i] == 0x7F) {
+    for (size_t j = 0; j < len; i++) {
+        if (key[j] <= ' ' || key[j] == 0x7F) {
             return false;
         }
     }

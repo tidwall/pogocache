@@ -358,8 +358,7 @@ static bool load_block(struct cblock *block, struct loadctx *ctx) {
             .cas = cas,
         };
         // printf("[%.*s]=[%.*s]\n", (int)keylen, key, (int)vallen, val);
-        int ret = pogocache_store(cache, key, keylen, val, vallen, &opts);
-        (void)ret;
+        ret = pogocache_store(cache, key, keylen, val, vallen, &opts);
         assert(ret == POGOCACHE_INSERTED || ret == POGOCACHE_REPLACED);
         ctx->ninserted++;
     }

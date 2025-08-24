@@ -31,3 +31,8 @@ pogocache.html
 pogocache2.html
 data/
 
+.env
+/.idea/.gitignore
+/.idea/editor.xml
+/.idea/misc.xml
+/.idea/vcs.xml

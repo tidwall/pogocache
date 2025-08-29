@@ -1,0 +1,21 @@
+services:
+  pogocache:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    image: local-pogocache
+    container_name: pogocache-server
+    ports:
+      - "9401:9401"
+    environment:
+      - AUTH_PASSWORD=${AUTH_PASSWORD:-}
+      - VERBOSITY=${VERBOSITY:-}
+    command: ${AUTH_PASSWORD:+--auth} ${AUTH_PASSWORD} -h 0.0.0.0 ${VERBOSITY}
+    restart: unless-stopped
+    networks:
+      - pogocache-network
+
+networks:
+  pogocache-network:
+    driver: bridge
+    name: pogocache-network

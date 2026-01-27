@@ -893,7 +893,7 @@ static void bgsaveloaddone(struct conn *conn, void *udata) {
 static void cmdSAVELOAD(struct conn *conn, struct args *args) {
     bool load = argeq(args, 0, "load");
     bool fast = false;
-    const char *path = persist;
+    const char *internal_path = persist;
     size_t plen = strlen(persist);
     for (size_t i = 1; i < args->len; i++) {
         if (argeq(args, i, "fast")) {
@@ -905,7 +905,7 @@ static void cmdSAVELOAD(struct conn *conn, struct args *args) {
             if (i == args->len) {
                 goto err_syntax;
             }
-            path = args->bufs[i].data;
+            internal_path = args->bufs[i].data;
             plen = args->bufs[i].len;
         } else {
             goto err_syntax;
@@ -920,7 +920,7 @@ static void cmdSAVELOAD(struct conn *conn, struct args *args) {
     ctx->fast = fast;
     ctx->path = xmalloc(plen+1);
     ctx->load = load;
-    memcpy(ctx->path, path, plen);
+    memcpy(ctx->path, internal_path, plen);
     ctx->path[plen] = '\0';
     if (!conn_bgwork(conn, bgsaveloadwork, bgsaveloaddone, ctx)) {
         conn_write_error(conn, "ERR failed to do work");
@@ -1727,13 +1727,13 @@ static void execINCRDECR(struct conn *conn, const char *key, size_t keylen,
     assert(status == POGOCACHE_INSERTED || status == POGOCACHE_REPLACED);
     int proto = conn_proto(conn);
     if (proto == PROTO_POSTGRES) {
-        char val[24];
+        char buf1[24];
         if (isunsigned) {
-            snprintf(val, sizeof(val), "%" PRIu64, ctx.uval);
+            snprintf(buf1, sizeof(buf1), "%" PRIu64, ctx.uval);
         } else {
-            snprintf(val, sizeof(val), "%" PRIi64, ctx.ival);
+            snprintf(buf1, sizeof(buf1), "%" PRIi64, ctx.ival);
         }
-        pg_write_simple_row_str_readyf(conn, "value", val, "%s", cmdname);
+        pg_write_simple_row_str_readyf(conn, "value", buf1, "%s", cmdname);
     } else {
         if (isunsigned) {
             conn_write_uint(conn, ctx.uval);
@@ -2271,7 +2271,6 @@ static void cmdSCAN(struct conn *conn, struct args *args) {
     return;
 err_syntax:
     conn_write_error(conn, ERR_SYNTAX_ERROR);
-    return;
 }
 
 

@@ -1,0 +1,7 @@
+#ifndef GITINFO_H
+#define GITINFO_H
+
+const char GITHASH[] = "@GIT_HASH@";
+const char GITVERS[] = "@GITVERS@";
+
+#endif /* !GITINFO_H */

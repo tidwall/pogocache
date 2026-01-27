@@ -1,4 +1,5 @@
 .DS_Store
+.idea
 .vscode
 *.dSYM
 *.o
@@ -30,5 +31,6 @@ pogocache.js
 pogocache.html
 pogocache2.html
 data/
+*build*
 repo.tar.gz
 packages/

@@ -1610,14 +1610,14 @@ static int storeop(const void *key, size_t keylen, const void *val,
     if (old && opts->entry) {
         // User is requesting to verify the old entry before allowing it to be
         // replaced by the new entry.
-        const char *val;
-        size_t vallen;
+        const char *val_;
+        size_t vallen_;
         int64_t oexpires = 0;
         uint32_t oflags = 0;
         uint64_t ocas = 0;
-        entry_extract(old, 0, 0, 0, &val, &vallen, &oexpires, &oflags, &ocas,
+        entry_extract(old, 0, 0, 0, &val_, &vallen_, &oexpires, &oflags, &ocas,
             ctx);
-        if (!opts->entry(shardidx, now, key, keylen, val, vallen, oexpires,
+        if (!opts->entry(shardidx, now, key, keylen, val_, vallen_, oexpires,
             oflags, ocas, opts->udata))
         {
             // User wants to keep the old entry.
@@ -1742,11 +1742,11 @@ int pogocache_iter(struct pogocache *cache, struct pogocache_iter_opts *opts) {
         );
     }
     for (int i = 0; i < nshards; i++) {
-        int status = ACQUIRE_FOR_SCAN_AND_EXECUTE(int, i,
+        const int rc = ACQUIRE_FOR_SCAN_AND_EXECUTE(int, i,
             iterop(shard, i, now, opts, &cache->ctx)
         );
-        if (status != POGOCACHE_FINISHED) {
-            return status;
+        if (rc != POGOCACHE_FINISHED) {
+            return rc;
         }
     }
     return POGOCACHE_FINISHED;
@@ -1923,6 +1923,19 @@ static int sweepop(struct shard *shard, int shardidx, int64_t now,
             continue;
         }
         // entry is no longer alive.
+        if (ctx->evicted) {
+            const char *key, *val;
+            size_t keylen, vallen;
+            int64_t expires_;
+            uint32_t flags;
+            uint64_t cas;
+            entry_extract(entry, &key, &keylen, buf, &val, &vallen, &expires_,
+                &flags, &cas, ctx);
+            // Report eviction to user
+            ctx->evicted(shardidx, reason, now, key, keylen, val, vallen,
+                expires_, flags, cas, ctx->udata);
+        }
+        shard->clearcount -= (reason==POGOCACHE_REASON_CLEARED);
         delbkt(&shard->map, i);
         notify(shardidx, NOTIFY_EXPIRED, 0, entry, now, ctx);
         entry_free(entry, ctx);

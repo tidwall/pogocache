@@ -1,0 +1,63 @@
+---
+apiVersion: cache.pogocache.io/v1alpha1
+kind: PogoCacheInstance
+metadata:
+  name: pogocache-sample
+  namespace: default
+  labels:
+    app.kubernetes.io/name: pogocache-sample
+spec:
+  # Run two replicas for availability.  Note that pogocache does not natively
+  # replicate data between instances, so multiple replicas are primarily useful
+  # for distributing read load behind a load balancer.
+  replicas: 2
+
+  image: pogocache/pogocache:latest
+
+  # Default HTTP / Memcache / RESP / Postgres port.
+  port: 9401
+
+  # Use four worker threads.
+  threads: 4
+
+  # Limit the heap to 512 MB per instance.
+  maxMemory: "512mb"
+
+  # Evict the least-recently-used keys when maxMemory is reached.
+  evict: true
+
+  # Cap concurrent connections per instance.
+  maxConns: 2048
+
+  resources:
+    requests:
+      cpu: "250m"
+      memory: "256Mi"
+    limits:
+      cpu: "1000m"
+      memory: "768Mi"
+
+  # Optional: node affinity targeting nodes with the "cache" label.
+  # nodeSelector:
+  #   role: cache
+
+  # Optional: persistence — uncomment to enable.
+  # persist:
+  #   path: /data/pogocache.db
+  #   size: 5Gi
+  #   storageClassName: standard
+
+  # Optional: authentication — uncomment one of the two options.
+  # auth:
+  #   # Option A: plaintext (not recommended for production)
+  #   password: "changeme"
+  #   # Option B: reference a Kubernetes Secret (recommended)
+  #   secretRef:
+  #     name: pogocache-auth
+  #     key: password
+
+  # Optional: TLS — uncomment to enable.  Create a Secret named
+  # "pogocache-tls" containing tls.crt, tls.key, and ca.crt first.
+  # tls:
+  #   port: 9402
+  #   secretRef: pogocache-tls

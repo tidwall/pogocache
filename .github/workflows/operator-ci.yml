@@ -1,0 +1,40 @@
+name: Operator CI
+
+on:
+  push:
+    branches: ["main"]
+    paths:
+      - "operator/**"
+      - ".github/workflows/operator-ci.yml"
+  pull_request:
+    branches: ["main"]
+    paths:
+      - "operator/**"
+      - ".github/workflows/operator-ci.yml"
+
+jobs:
+  build:
+    name: Build & vet
+    runs-on: ubuntu-latest
+
+    defaults:
+      run:
+        working-directory: operator
+
+    steps:
+      - uses: actions/checkout@v6
+
+      - name: Set up Go
+        uses: actions/setup-go@v5
+        with:
+          go-version-file: operator/go.mod
+          cache-dependency-path: operator/go.sum
+
+      - name: go vet
+        run: go vet ./...
+
+      - name: Test
+        run: go test -race -count=1 ./...
+
+      - name: Build
+        run: CGO_ENABLED=0 go build -trimpath -o /dev/null ./main.go

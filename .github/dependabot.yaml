@@ -8,3 +8,11 @@ updates:
     directory: tests
     schedule:
       interval: weekly
+  - package-ecosystem: gomod
+    directory: operator
+    schedule:
+      interval: weekly
+  - package-ecosystem: docker
+    directory: operator
+    schedule:
+      interval: weekly

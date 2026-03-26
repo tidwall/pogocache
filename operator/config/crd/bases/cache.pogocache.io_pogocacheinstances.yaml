@@ -1,0 +1,370 @@
+---
+apiVersion: apiextensions.k8s.io/v1
+kind: CustomResourceDefinition
+metadata:
+  annotations:
+    controller-gen.kubebuilder.io/version: v0.20.1
+  name: pogocacheinstances.cache.pogocache.io
+spec:
+  group: cache.pogocache.io
+  names:
+    categories:
+      - cache
+    kind: PogoCacheInstance
+    listKind: PogoCacheInstanceList
+    plural: pogocacheinstances
+    shortNames:
+      - pci
+      - pogocache
+    singular: pogocacheinstance
+  scope: Namespaced
+  versions:
+    - additionalPrinterColumns:
+        - jsonPath: .status.phase
+          name: Phase
+          type: string
+        - jsonPath: .status.readyReplicas
+          name: Ready
+          type: integer
+        - jsonPath: .spec.replicas
+          name: Replicas
+          type: integer
+        - jsonPath: .metadata.creationTimestamp
+          name: Age
+          type: date
+      name: v1alpha1
+      schema:
+        openAPIV3Schema:
+          description: PogoCacheInstance is the Schema for the pogocacheinstances API.
+          properties:
+            apiVersion:
+              description: >-
+                APIVersion defines the versioned schema of this representation
+                of an object. Servers should convert recognized schemas to the
+                latest internal value, and may reject unrecognized values. More
+                info:
+                https://git.k8s.io/community/contributors/devel/sig-architecture/api-conventions.md#resources
+              type: string
+            kind:
+              description: >-
+                Kind is a string value representing the REST resource this
+                object represents. Servers may infer this from the endpoint the
+                client submits requests to. Cannot be updated. In CamelCase.
+                More info:
+                https://git.k8s.io/community/contributors/devel/sig-architecture/api-conventions.md#types-kinds
+              type: string
+            metadata:
+              type: object
+            spec:
+              description: PogoCacheInstanceSpec defines the desired state of PogoCacheInstance.
+              properties:
+                affinity:
+                  description: Affinity defines scheduling affinity rules for the cache pods.
+                  x-kubernetes-preserve-unknown-fields: true
+                auth:
+                  description: Auth configures authentication for the cache.
+                  properties:
+                    password:
+                      description: >-
+                        Password is a plaintext authentication token. Prefer
+                        SecretRef for production use.
+                      type: string
+                    secretRef:
+                      description: >-
+                        SecretRef references a key in a Kubernetes Secret
+                        containing the auth password. When set, this takes
+                        precedence over the Password field.
+                      properties:
+                        key:
+                          description: The key of the secret to select from.
+                          type: string
+                        name:
+                          description: >-
+                            Name of the referent. More info:
+                            https://kubernetes.io/docs/concepts/overview/working-with-objects/names/#names
+                          type: string
+                        optional:
+                          description: Specify whether the Secret or its key must be defined.
+                          type: boolean
+                      required:
+                        - key
+                      type: object
+                      x-kubernetes-map-type: atomic
+                  type: object
+                evict:
+                  description: >-
+                    Evict controls whether keys are evicted when maxmemory is
+                    reached (--evict).
+                  type: boolean
+                extraFlags:
+                  description: >-
+                    ExtraFlags are appended verbatim to the POGOCACHE_EXTRA_FLAGS
+                    environment variable.
+                  type: string
+                image:
+                  default: pogocache/pogocache:latest
+                  description: >-
+                    Image is the container image for pogocache. Defaults to
+                    "pogocache/pogocache:latest".
+                  type: string
+                maxConns:
+                  description: >-
+                    MaxConns sets the maximum number of concurrent connections
+                    (--maxconns).
+                  format: int32
+                  minimum: 1
+                  type: integer
+                maxMemory:
+                  description: >-
+                    MaxMemory sets the memory limit, e.g. "80%" or "4gb"
+                    (--maxmemory).
+                  type: string
+                nodeSelector:
+                  additionalProperties:
+                    type: string
+                  description: NodeSelector is a map of node labels used for pod scheduling.
+                  type: object
+                persist:
+                  description: Persist configures on-disk persistence for the cache.
+                  properties:
+                    path:
+                      description: >-
+                        Path is the file path inside the container used for
+                        persistence (--persist).
+                      minLength: 1
+                      type: string
+                    size:
+                      anyOf:
+                        - type: integer
+                        - type: string
+                      description: >-
+                        Size is the requested storage capacity, e.g. "1Gi".
+                      pattern: ^(\+|-)?(([0-9]+(\.[0-9]*)?)|(\.[0-9]+))(([KMGTPE]i)|[numkMGTPE]|([eE](\+|-)?(([0-9]+(\.[0-9]*)?)|(\.[0-9]+))))?$
+                      x-kubernetes-int-or-string: true
+                    storageClassName:
+                      description: >-
+                        StorageClassName is the name of the StorageClass to use
+                        for the PVC. If not set, the cluster default
+                        StorageClass is used.
+                      type: string
+                  required:
+                    - path
+                    - size
+                  type: object
+                port:
+                  default: 9401
+                  description: Port is the port pogocache listens on. Defaults to 9401.
+                  format: int32
+                  maximum: 65535
+                  minimum: 1
+                  type: integer
+                replicas:
+                  default: 1
+                  description: Number of pod replicas. Defaults to 1.
+                  format: int32
+                  minimum: 0
+                  type: integer
+                resources:
+                  description: >-
+                    Resources defines compute resource requests and limits for
+                    the cache container.
+                  properties:
+                    claims:
+                      description: >-
+                        Claims lists the names of resources, defined in
+                        spec.resourceClaims, that are used by this container.
+                      items:
+                        description: ResourceClaim references one entry in PodSpec.ResourceClaims.
+                        properties:
+                          name:
+                            description: >-
+                              Name must match the name of one entry in
+                              pod.spec.resourceClaims of the Pod where this
+                              field is used. It makes that resource available
+                              inside a container.
+                            type: string
+                          request:
+                            description: >-
+                              Request is the name chosen for a request in the
+                              referenced claim.
+                            type: string
+                        required:
+                          - name
+                        type: object
+                      type: array
+                      x-kubernetes-list-map-keys:
+                        - name
+                      x-kubernetes-list-type: map
+                    limits:
+                      additionalProperties:
+                        anyOf:
+                          - type: integer
+                          - type: string
+                        pattern: ^(\+|-)?(([0-9]+(\.[0-9]*)?)|(\.[0-9]+))(([KMGTPE]i)|[numkMGTPE]|([eE](\+|-)?(([0-9]+(\.[0-9]*)?)|(\.[0-9]+))))?$
+                        x-kubernetes-int-or-string: true
+                      description: >-
+                        Limits describes the maximum amount of compute
+                        resources allowed.
+                      type: object
+                    requests:
+                      additionalProperties:
+                        anyOf:
+                          - type: integer
+                          - type: string
+                        pattern: ^(\+|-)?(([0-9]+(\.[0-9]*)?)|(\.[0-9]+))(([KMGTPE]i)|[numkMGTPE]|([eE](\+|-)?(([0-9]+(\.[0-9]*)?)|(\.[0-9]+))))?$
+                        x-kubernetes-int-or-string: true
+                      description: >-
+                        Requests describes the minimum amount of compute
+                        resources required.
+                      type: object
+                  type: object
+                threads:
+                  description: >-
+                    Threads sets the number of worker threads (--threads).
+                    Defaults to CPU count.
+                  format: int32
+                  minimum: 1
+                  type: integer
+                tls:
+                  description: TLS configures TLS termination for the cache.
+                  properties:
+                    port:
+                      description: >-
+                        Port is the port pogocache listens on for TLS
+                        connections (--tlsport).
+                      format: int32
+                      maximum: 65535
+                      minimum: 1
+                      type: integer
+                    secretRef:
+                      description: >-
+                        SecretRef is the name of a Kubernetes Secret in the
+                        same namespace containing tls.crt (certificate),
+                        tls.key (private key), and optionally ca.crt (CA
+                        cert).
+                      minLength: 1
+                      type: string
+                  required:
+                    - port
+                    - secretRef
+                  type: object
+                tolerations:
+                  description: >-
+                    Tolerations define pod tolerations for scheduling onto
+                    tainted nodes.
+                  items:
+                    description: >-
+                      The pod this Toleration is attached to tolerates any
+                      taint that matches the triple
+                      <key,value,effect> using the matching operator
+                      <operator>.
+                    properties:
+                      effect:
+                        description: >-
+                          Effect indicates the taint effect to match. Empty
+                          means match all taint effects.
+                        type: string
+                      key:
+                        description: >-
+                          Key is the taint key that the toleration applies to.
+                          Empty means match all taint keys.
+                        type: string
+                      operator:
+                        description: >-
+                          Operator represents a key's relationship to the
+                          value.
+                        type: string
+                      tolerationSeconds:
+                        description: >-
+                          TolerationSeconds represents the period of time the
+                          toleration tolerates the taint.
+                        format: int64
+                        type: integer
+                      value:
+                        description: >-
+                          Value is the taint value the toleration matches to.
+                        type: string
+                    type: object
+                  type: array
+              type: object
+            status:
+              description: PogoCacheInstanceStatus defines the observed state of PogoCacheInstance.
+              properties:
+                conditions:
+                  description: >-
+                    Conditions provide detailed status conditions following the
+                    k8s conventions.
+                  items:
+                    description: Condition contains details for one aspect of the current state of this API Resource.
+                    properties:
+                      lastTransitionTime:
+                        description: >-
+                          LastTransitionTime is the last time the condition
+                          transitioned from one status to another.
+                        format: date-time
+                        type: string
+                      message:
+                        description: >-
+                          Message is a human readable message indicating
+                          details about the transition.
+                        maxLength: 32768
+                        type: string
+                      observedGeneration:
+                        description: >-
+                          ObservedGeneration represents the .metadata.generation
+                          that the condition was set based upon.
+                        format: int64
+                        minimum: 0
+                        type: integer
+                      reason:
+                        description: >-
+                          Reason contains a programmatic identifier indicating
+                          the reason for the condition's last transition.
+                        maxLength: 1024
+                        minLength: 1
+                        pattern: ^[A-Za-z]([A-Za-z0-9_,:]*[A-Za-z0-9_])?$
+                        type: string
+                      status:
+                        description: Status of the condition, one of True, False, Unknown.
+                        enum:
+                          - "True"
+                          - "False"
+                          - Unknown
+                        type: string
+                      type:
+                        description: Type of condition in CamelCase.
+                        maxLength: 316
+                        pattern: ^([a-z0-9]([-a-z0-9]*[a-z0-9])?(\.[a-z0-9]([-a-z0-9]*[a-z0-9])?)*/)?(([A-Za-z0-9][-A-Za-z0-9_.]*)?[A-Za-z0-9])$
+                        type: string
+                    required:
+                      - lastTransitionTime
+                      - message
+                      - reason
+                      - status
+                      - type
+                    type: object
+                  type: array
+                  x-kubernetes-list-map-keys:
+                    - type
+                  x-kubernetes-list-type: map
+                phase:
+                  description: >-
+                    Phase summarises the overall lifecycle state: Pending,
+                    Running, or Failed.
+                  enum:
+                    - Pending
+                    - Running
+                    - Failed
+                  type: string
+                readyReplicas:
+                  description: ReadyReplicas is the number of pods with a Ready condition.
+                  format: int32
+                  type: integer
+              required:
+                - readyReplicas
+              type: object
+          type: object
+      served: true
+      storage: true
+      subresources:
+        status: {}

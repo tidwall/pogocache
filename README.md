@@ -101,6 +101,15 @@ Run Pogocache using the latest Docker image.
 docker run pogocache/pogocache
 ```
 
+## CMake (alternative build)
+
+```sh
+$ cmake -S . -B build
+$ cmake --build build
+$ build/bin/pogocache --version
+pogocache 1.0.0-3-ge7496ed
+```
+
 <details>
 <summary>
 

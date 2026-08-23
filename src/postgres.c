@@ -602,11 +602,11 @@ static bool parse_query_args(const char *query, struct args *args,
                     parse_errorf("unterminated quoted string");
                     goto done;
                 }
-                size_t slen = p-str;
+                size_t s_len = p-str;
                 if (!esc) {
-                    args_append(args, str, slen, true);
+                    args_append(args, str, s_len, true);
                 } else {
-                    arg_append_unescape_str(args, str, slen);
+                    arg_append_unescape_str(args, str, s_len);
                 }
                 if (argtypes) {
                     buf_append_byte(argtypes, 'A'+join);
@@ -894,13 +894,13 @@ static size_t parseB(const char *data, size_t len, struct args *args,
     uint16_t num_params = parse_int16();
     args_clear(&pg->targs);
     for (int i = 0; i < num_params; i++) {
-        int32_t len = parse_int32();
-        if (len <= 0) {
+        int32_t n = parse_int32();
+        if (n <= 0) {
             // Nulls are empty strings
-            len = 0;
+            n = 0;
         }
-        const char *b = parse_bytes(len);
-        args_append(&pg->targs, b, len, false);
+        const char *b = parse_bytes(n);
+        args_append(&pg->targs, b, n, false);
     }
     // ignore result formats
     uint16_t num_result_formats = parse_int16();

@@ -1,0 +1,3 @@
+Fast caching software with a focus on low latency and cpu efficiency.
+
+This installs pogocache.
